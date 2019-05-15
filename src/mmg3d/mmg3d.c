@@ -57,7 +57,7 @@ static int readMetricSolFile(MMG5_pMesh mesh)
   if (pFile==NULL)
   {
     fprintf(stderr,"\nWarning: we could not open the metric.sol file ");
-    fprintf(sterr,"properly.\n");
+    fprintf(stderr,"properly.\n");
     return 0;
   }
   fprintf(stdout,"\nReading metric solution. ");
