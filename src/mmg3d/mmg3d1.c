@@ -1089,6 +1089,10 @@ MMG5_anatetv(MMG5_pMesh mesh,MMG5_pSol met,char typchk) {
   int      l,vx[6],k,ip,ip1,ip2,nap,ns,ne,memlack,ier;
   char     i,j,ia;
 
+////////////////////////////////////////////////////////////////////////////////
+  double   value=0.0;
+////////////////////////////////////////////////////////////////////////////////
+
   /** 1. analysis */
   if ( !MMG5_hashNew(mesh,&hash,mesh->np,7*mesh->np) )  return -1;
   memlack = ns = nap = 0;
@@ -1136,6 +1140,11 @@ MMG5_anatetv(MMG5_pMesh mesh,MMG5_pSol met,char typchk) {
       ip2 = pt->v[MMG5_iare[i][1]];
       p1  = &mesh->point[ip1];
       p2  = &mesh->point[ip2];
+
+////////////////////////////////////////////////////////////////////////////////
+      value = 0.5 * (p1->value + p2->value);
+////////////////////////////////////////////////////////////////////////////////
+
       if ( pt->xt ) {
         pxt = &mesh->xtetra[pt->xt];
         if ( pxt->tag[i] & MG_REQ ) continue;
@@ -1203,6 +1212,13 @@ MMG5_anatetv(MMG5_pMesh mesh,MMG5_pSol met,char typchk) {
                                goto split
                                ,o,0);
         }
+
+////////////////////////////////////////////////////////////////////////////////
+        if ( mesh->info.iso ) 
+        {
+          mesh->point[ip].value = value;
+        }
+////////////////////////////////////////////////////////////////////////////////
 
         assert ( met );
         if ( met->m ) {
@@ -1404,6 +1420,10 @@ int MMG3D_splsurfedge( MMG5_pMesh mesh,MMG5_pSol met,int k,
   int16_t      tag;
   char         j,i,i1,i2,ifa0,ifa1;
 
+////////////////////////////////////////////////////////////////////////////////
+  double   value=0.0;
+////////////////////////////////////////////////////////////////////////////////
+
   assert ( pxt = &mesh->xtetra[pt->xt] );
 
   /* proceed edges according to lengths */
@@ -1417,6 +1437,10 @@ int MMG3D_splsurfedge( MMG5_pMesh mesh,MMG5_pSol met,int k,
   ip2 = pt->v[i2];
   p0  = &mesh->point[ip1];
   p1  = &mesh->point[ip2];
+
+////////////////////////////////////////////////////////////////////////////////
+  value = 0.5 * (p0->value + p1->value);
+////////////////////////////////////////////////////////////////////////////////
 
   ref = pxt->edg[imax];
   tag = pxt->tag[imax];
@@ -1494,6 +1518,13 @@ int MMG3D_splsurfedge( MMG5_pMesh mesh,MMG5_pSol met,int k,
                         return 2;
                         ,o,tag);
   }
+
+////////////////////////////////////////////////////////////////////////////////
+  if ( mesh->info.iso ) 
+  {
+    mesh->point[ip].value = value;
+  }
+////////////////////////////////////////////////////////////////////////////////
 
   if ( met->m ) {
     if ( typchk == 1 && (met->size>1) ) {
@@ -1782,6 +1813,10 @@ MMG3D_anatets_iso(MMG5_pMesh mesh,MMG5_pSol met,char typchk) {
   static double uv[3][2] = { {0.5,0.5}, {0.,0.5}, {0.5,0.} };
   static char   mmgWarn = 0, mmgWarn2 = 0;
 
+////////////////////////////////////////////////////////////////////////////////
+  double   value=0.0;
+////////////////////////////////////////////////////////////////////////////////
+
   /** 1. analysis of boundary elements */
   if ( !MMG5_hashNew(mesh,&hash,mesh->np,7*mesh->np) ) return -1;
   ns = nap = 0;
@@ -1823,6 +1858,11 @@ MMG3D_anatets_iso(MMG5_pMesh mesh,MMG5_pSol met,char typchk) {
         i2  = MMG5_iare[ia][1];
         ip1 = pt->v[i1];
         ip2 = pt->v[i2];
+
+////////////////////////////////////////////////////////////////////////////////
+        value = 0.5 * (mesh->point[ip1].value + mesh->point[ip2].value);
+////////////////////////////////////////////////////////////////////////////////
+
         ip  = MMG5_hashGet(&hash,ip1,ip2);
         if ( ip > 0 && !(ptt.tag[j] & MG_GEO) )  continue;
 
@@ -1846,6 +1886,13 @@ MMG3D_anatets_iso(MMG5_pMesh mesh,MMG5_pSol met,char typchk) {
           }
           if ( !MMG5_hashEdge(mesh,&hash,ip1,ip2,ip) )  return -1;
           ppt = &mesh->point[ip];
+
+////////////////////////////////////////////////////////////////////////////////
+          if ( mesh->info.iso ) 
+          {
+            ppt->value = value;
+          }
+////////////////////////////////////////////////////////////////////////////////
 
           assert ( met );
           if ( met->m ) {

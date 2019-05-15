@@ -59,6 +59,10 @@ static int MMG5_adpspl(MMG5_pMesh mesh,MMG5_pSol met, int* warn) {
  char         chkRidTet;
  static char  mmgWarn    = 0;
 
+////////////////////////////////////////////////////////////////////////////////
+ double value=0.0;
+////////////////////////////////////////////////////////////////////////////////
+
   *warn=0;
   ns = 0;
 
@@ -104,6 +108,10 @@ static int MMG5_adpspl(MMG5_pMesh mesh,MMG5_pSol met, int* warn) {
     p0  = &mesh->point[ip1];
     p1  = &mesh->point[ip2];
 
+////////////////////////////////////////////////////////////////////////////////
+    value = 0.5 * (p0->value + p1->value);
+////////////////////////////////////////////////////////////////////////////////
+
     /* Case of a boundary face */
     if ( pt->xt && (pxt->ftag[i] & MG_BDY) ) {
       if ( !(MG_GET(pxt->ori,i)) ) continue;
@@ -135,6 +143,14 @@ static int MMG5_adpspl(MMG5_pMesh mesh,MMG5_pSol met, int* warn) {
                              break
                              ,o,MG_NOTAG);
       }
+
+////////////////////////////////////////////////////////////////////////////////
+      if ( mesh->info.iso ) 
+      {
+        mesh->point[ip].value = value;
+      }
+////////////////////////////////////////////////////////////////////////////////
+
       if ( met->m ) {
         ier = MMG5_intmet(mesh,met,k,imax,ip,0.5);
         if ( !ier ) {

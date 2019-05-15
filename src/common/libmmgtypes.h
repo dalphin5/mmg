@@ -214,6 +214,11 @@ typedef struct {
 typedef struct {
   double   c[3]; /*!< Coordinates of point */
   double   n[3]; /*!< Normal or Tangent for mmgs and Tangent (if needed) for mmg3d */
+
+////////////////////////////////////////////////////////////////////////////////
+  double   value; /* value associated to a point */
+////////////////////////////////////////////////////////////////////////////////
+
   int      ref; /*!< Reference of point */
   int      xp; /*!< Surface point number */
   int      tmp; /*!< Index of point in the saved mesh (we don't count

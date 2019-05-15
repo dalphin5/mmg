@@ -3308,6 +3308,10 @@ int MMG5_split4bar(MMG5_pMesh mesh, MMG5_pSol met, int k,char metRidTyp) {
   int           newtet[4];
   unsigned char isxt[4],firstxt;
 
+////////////////////////////////////////////////////////////////////////////////
+  double value=0.0;
+////////////////////////////////////////////////////////////////////////////////
+
   pt[0] = &mesh->tetra[k];
   pt[0]->flag = 0;
   newtet[0]=k;
@@ -3319,10 +3323,19 @@ int MMG5_split4bar(MMG5_pMesh mesh, MMG5_pSol met, int k,char metRidTyp) {
     o[0] += ppt->c[0];
     o[1] += ppt->c[1];
     o[2] += ppt->c[2];
+
+////////////////////////////////////////////////////////////////////////////////
+    value += ppt->value;
+////////////////////////////////////////////////////////////////////////////////
+
   }
   o[0] *= 0.25;
   o[1] *= 0.25;
   o[2] *= 0.25;
+
+////////////////////////////////////////////////////////////////////////////////
+  value *= 0.25;
+////////////////////////////////////////////////////////////////////////////////
 
   cb[0] = 0.25; cb[1] = 0.25;  cb[2] = 0.25;  cb[3] = 0.25;
   ib = MMG3D_newPt(mesh,o,0);
@@ -3334,6 +3347,14 @@ int MMG5_split4bar(MMG5_pMesh mesh, MMG5_pSol met, int k,char metRidTyp) {
                          return 0
                          ,o,0);
   }
+
+////////////////////////////////////////////////////////////////////////////////
+  if ( mesh->info.iso ) 
+  {
+    mesh->point[ib].value = value;
+  }
+////////////////////////////////////////////////////////////////////////////////
+
   if ( met->m ) {
     if ( !metRidTyp && met->size > 1 )
       MMG5_interp4bar33_ani(mesh,met,k,ib,cb);
@@ -5264,6 +5285,10 @@ int MMG5_splitedg(MMG5_pMesh mesh, MMG5_pSol met,int iel, int iar, double crit){
   int          list[MMG3D_LMAX+2],i0,i1,ip,warn,lon,ier;
   int16_t      tag;
 
+////////////////////////////////////////////////////////////////////////////////
+  double value=0.0;
+////////////////////////////////////////////////////////////////////////////////
+
   warn = 0;
   pt = &mesh->tetra[iel];
   lon = MMG5_coquil(mesh,iel,iar,list);
@@ -5294,6 +5319,10 @@ int MMG5_splitedg(MMG5_pMesh mesh, MMG5_pSol met,int iel, int iar, double crit){
   o[1] = 0.5*(p0->c[1] + p1->c[1]);
   o[2] = 0.5*(p0->c[2] + p1->c[2]);
 
+////////////////////////////////////////////////////////////////////////////////
+  value = 0.5 * (p0->value + p1->value);
+////////////////////////////////////////////////////////////////////////////////
+
   ip = MMG3D_newPt(mesh,o,tag);
 
   if ( !ip )  {
@@ -5311,6 +5340,13 @@ int MMG5_splitedg(MMG5_pMesh mesh, MMG5_pSol met,int iel, int iar, double crit){
             " of MMG5_adpspl.\n");
     MMG5_INCREASE_MEM_MESSAGE();
   }
+
+////////////////////////////////////////////////////////////////////////////////
+  if ( mesh->info.iso ) 
+  {
+    mesh->point[ip].value = value;
+  }
+////////////////////////////////////////////////////////////////////////////////
 
   ier = MMG5_intmet(mesh,met,iel,iar,ip,0.5);
   if ( !ier ) {

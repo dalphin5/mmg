@@ -86,6 +86,10 @@ MMG5_boucle_for(MMG5_pMesh mesh, MMG5_pSol met,MMG3D_pPROctree *PROctree,int ne,
   char         chkRidTet;
   static char  mmgWarn0 = 0;
 
+////////////////////////////////////////////////////////////////////////////////
+  double        value=0.0;
+////////////////////////////////////////////////////////////////////////////////
+
   countMemFailure = 0;
 
   /*first try to adapt the bdry so very strict criterion on the volume for Delaunay insertion*/
@@ -154,6 +158,10 @@ MMG5_boucle_for(MMG5_pMesh mesh, MMG5_pSol met,MMG3D_pPROctree *PROctree,int ne,
       p0  = &mesh->point[ip1];
       p1  = &mesh->point[ip2];
 
+////////////////////////////////////////////////////////////////////////////////
+      value = 0.5 * (p0->value + p1->value);
+////////////////////////////////////////////////////////////////////////////////
+
       /* Case of a boundary face */
       if ( pt->xt && (pxt->ftag[i] & MG_BDY) ) {
         if ( !(MG_GET(pxt->ori,i)) ) continue;
@@ -212,6 +220,14 @@ MMG5_boucle_for(MMG5_pMesh mesh, MMG5_pSol met,MMG3D_pPROctree *PROctree,int ne,
                                goto collapse,
                                o,tag);
         }
+
+////////////////////////////////////////////////////////////////////////////////
+        if ( mesh->info.iso ) 
+        {
+          mesh->point[ip].value = value;
+        }
+////////////////////////////////////////////////////////////////////////////////
+
         if ( met->m ) {
           if ( MMG5_intmet(mesh,met,k,imax,ip,0.5) <=0 ) {
             MMG3D_delPt(mesh,ip);
@@ -296,6 +312,14 @@ MMG5_boucle_for(MMG5_pMesh mesh, MMG5_pSol met,MMG3D_pPROctree *PROctree,int ne,
                                goto collapse,
                                o,MG_NOTAG);
         }
+
+////////////////////////////////////////////////////////////////////////////////
+        if ( mesh->info.iso ) 
+        {
+          mesh->point[ip].value = value;
+        }
+////////////////////////////////////////////////////////////////////////////////
+
         if ( met->m ) {
           if ( MMG5_intmet(mesh,met,k,imax,ip,0.5)<=0 ) {
             MMG3D_delPt(mesh,ip);
@@ -341,6 +365,14 @@ MMG5_boucle_for(MMG5_pMesh mesh, MMG5_pSol met,MMG3D_pPROctree *PROctree,int ne,
                                goto collapse,
                                o,MG_NOTAG);
         }
+
+////////////////////////////////////////////////////////////////////////////////
+        if ( mesh->info.iso ) 
+        {
+          mesh->point[ip].value = value;
+        }
+////////////////////////////////////////////////////////////////////////////////
+
         if ( met->m ) {
           if ( MMG5_intmet(mesh,met,k,imax,ip,0.5)<=0 ) {
             MMG3D_delPt(mesh,ip);
@@ -502,6 +534,10 @@ MMG5_boucle_for(MMG5_pMesh mesh, MMG5_pSol met,MMG3D_pPROctree *PROctree,int ne,
         p0  = &mesh->point[ip1];
         p1  = &mesh->point[ip2];
 
+////////////////////////////////////////////////////////////////////////////////
+        value = 0.5 * (p0->value + p1->value);
+////////////////////////////////////////////////////////////////////////////////
+
         /* Case of a boundary face */
         if ( pt->xt && (pxt->ftag[i] & MG_BDY) ) {
           if ( !(MG_GET(pxt->ori,i)) ) continue;
@@ -560,6 +596,14 @@ MMG5_boucle_for(MMG5_pMesh mesh, MMG5_pSol met,MMG3D_pPROctree *PROctree,int ne,
                                  goto collapse2//break
                                  ,o,tag);
           }
+
+////////////////////////////////////////////////////////////////////////////////
+          if ( mesh->info.iso ) 
+          {
+            mesh->point[ip].value = value;
+          }
+////////////////////////////////////////////////////////////////////////////////
+
           if ( met->m ) {
             if ( MMG5_intmet(mesh,met,k,imax,ip,0.5)<=0 ) {
               MMG3D_delPt(mesh,ip);
@@ -646,6 +690,14 @@ MMG5_boucle_for(MMG5_pMesh mesh, MMG5_pSol met,MMG3D_pPROctree *PROctree,int ne,
                                  goto collapse2
                                  ,o,MG_NOTAG);
           }
+
+////////////////////////////////////////////////////////////////////////////////
+          if ( mesh->info.iso ) 
+          {
+            mesh->point[ip].value = value;
+          }
+////////////////////////////////////////////////////////////////////////////////
+
           if ( met->m ) {
             if ( MMG5_intmet(mesh,met,k,imax,ip,0.5)<=0 ) {
               MMG3D_delPt(mesh,ip);
@@ -690,6 +742,14 @@ MMG5_boucle_for(MMG5_pMesh mesh, MMG5_pSol met,MMG3D_pPROctree *PROctree,int ne,
                                  goto collapse2,
                                  o,MG_NOTAG);
           }
+
+////////////////////////////////////////////////////////////////////////////////
+          if ( mesh->info.iso ) 
+          {
+            mesh->point[ip].value = value;
+          }
+////////////////////////////////////////////////////////////////////////////////
+
           if ( met->m ) {
             if ( MMG5_intmet(mesh,met,k,imax,ip,0.5)<=0 ) {
               MMG3D_delPt(mesh,ip);

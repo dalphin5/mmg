@@ -430,6 +430,10 @@ static int MMG3D_cuttet_ls(MMG5_pMesh mesh, MMG5_pSol sol){
   char          ia,j,npneg;
   static char   mmgWarn = 0;
 
+////////////////////////////////////////////////////////////////////////////////
+  double value=0.0;
+////////////////////////////////////////////////////////////////////////////////
+
   /* reset point flags and h */
   for (k=1; k<=mesh->np; k++)
     mesh->point[k].flag = 0;
@@ -524,6 +528,10 @@ static int MMG3D_cuttet_ls(MMG5_pMesh mesh, MMG5_pSol sol){
       c[1] = p0->c[1] + s*(p1->c[1]-p0->c[1]);
       c[2] = p0->c[2] + s*(p1->c[2]-p0->c[2]);
 
+////////////////////////////////////////////////////////////////////////////////
+      value = p0->value + s*(p1->value-p0->value);
+////////////////////////////////////////////////////////////////////////////////
+
       np = MMG3D_newPt(mesh,c,0);
       if ( !np ) {
         MMG3D_POINT_REALLOC(mesh,sol,np,0.2,
@@ -534,6 +542,13 @@ static int MMG3D_cuttet_ls(MMG5_pMesh mesh, MMG5_pSol sol){
                              ,c,0);
       }
       sol->m[np] = mesh->info.ls;
+
+////////////////////////////////////////////////////////////////////////////////
+      if ( mesh->info.iso ) 
+      {
+        mesh->point[np].value = value;
+      }
+////////////////////////////////////////////////////////////////////////////////
 
       if ( npneg ) {
         /* We split a required edge */

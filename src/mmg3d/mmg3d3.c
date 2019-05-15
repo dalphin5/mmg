@@ -112,6 +112,10 @@ static int MMG5_spllag(MMG5_pMesh mesh,MMG5_pSol disp,MMG5_pSol met,int itdeg, i
   char         imax,i,i1,i2;
   static char  mmgWarn0 = 0;
 
+////////////////////////////////////////////////////////////////////////////////
+  double value=0.0;
+////////////////////////////////////////////////////////////////////////////////
+
   *warn=0;
   ns = 0;
   hma2 = mesh->info.hmax*mesh->info.hmax;
@@ -179,12 +183,23 @@ static int MMG5_spllag(MMG5_pMesh mesh,MMG5_pSol disp,MMG5_pSol met,int itdeg, i
     o[1] = 0.5*(p0->c[1] + p1->c[1]);
     o[2] = 0.5*(p0->c[2] + p1->c[2]);
 
+////////////////////////////////////////////////////////////////////////////////
+    value = 0.5 * (p0->value + p1->value);
+////////////////////////////////////////////////////////////////////////////////
+
     ip = MMG3D_newPt(mesh,o,MG_NOTAG);
 
     if ( !ip )  {
       /* reallocation of point table */
       MMG3D_POINT_REALLOC(mesh,met,ip,mesh->gap,*warn=1;break,o,MG_NOTAG);
     }
+
+////////////////////////////////////////////////////////////////////////////////
+    if ( mesh->info.iso ) 
+    {
+      mesh->point[ip].value = value;
+    }
+////////////////////////////////////////////////////////////////////////////////
 
     /* Interpolation of metric, if any */
     if ( met->m ) {

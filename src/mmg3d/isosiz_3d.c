@@ -699,6 +699,10 @@ int MMG3D_defsiz_iso(MMG5_pMesh mesh,MMG5_pSol met) {
         isloc   = 0;
         hmax = mesh->info.hmax;
 
+////////////////////////////////////////////////////////////////////////////////
+        hmin = mesh->info.hmin;
+////////////////////////////////////////////////////////////////////////////////
+
         /* Local param at vertex */
         if ( mesh->info.parTyp & MG_Vert ) {
           for (l=0; l<mesh->info.npar; l++) {
@@ -706,6 +710,11 @@ int MMG3D_defsiz_iso(MMG5_pMesh mesh,MMG5_pSol met) {
             par = &mesh->info.par[l];
             if ( (par->elt == MMG5_Vertex) && (p0->ref == par->ref ) ) {
               hmax = par->hmax;
+
+////////////////////////////////////////////////////////////////////////////////
+              hmin = par->hmin;
+////////////////////////////////////////////////////////////////////////////////
+
               isloc   = 1;
               break;
             }
@@ -727,6 +736,11 @@ int MMG3D_defsiz_iso(MMG5_pMesh mesh,MMG5_pSol met) {
               ptloc = &mesh->tetra[listv[kk]/4];
               if ( par->ref == ptloc->ref ) {
                 hmax = par->hmax;
+
+////////////////////////////////////////////////////////////////////////////////
+                hmin = par->hmin;
+////////////////////////////////////////////////////////////////////////////////
+
                 isloc   = 1;
                 break;
               }
@@ -741,13 +755,25 @@ int MMG3D_defsiz_iso(MMG5_pMesh mesh,MMG5_pSol met) {
               ptloc = &mesh->tetra[listv[kk]/4];
               if ( par->ref == ptloc->ref ) {
                 hmax = MG_MIN(hmax,par->hmax);
+
+////////////////////////////////////////////////////////////////////////////////
+                hmin = MG_MAX(hmin,par->hmin);
+////////////////////////////////////////////////////////////////////////////////
+
                 break;
               }
             }
           }
         }
         /** Second step: set the metric */
-        met->m[ip0] = hmax;
+        //met->m[ip0] = hmax;
+
+////////////////////////////////////////////////////////////////////////////////
+        // we don't forget to scale the values here
+        met->m[ip0] =
+              MG_MIN(hmax,MG_MAX(hmin,mesh->point[ip0].value/mesh->info.delta));
+////////////////////////////////////////////////////////////////////////////////
+
         p0->flag    = 1;
       }
     }
@@ -763,7 +789,14 @@ int MMG3D_defsiz_iso(MMG5_pMesh mesh,MMG5_pSol met) {
 
         if ( p0->flag ) continue;
 
-        met->m[ip0] = hmax;
+        //met->m[ip0] = hmax;
+
+////////////////////////////////////////////////////////////////////////////////
+        // we don't forget to scale the values here
+        met->m[ip0] = 
+              MG_MIN(hmax,MG_MAX(hmin,mesh->point[ip0].value/mesh->info.delta));
+////////////////////////////////////////////////////////////////////////////////
+
         p0->flag    = 1;
       }
     }

@@ -443,6 +443,10 @@ int MMG5_swpbdy(MMG5_pMesh mesh,MMG5_pSol met,int *list,int ret,int it1,
   int           na;
 #endif
 
+////////////////////////////////////////////////////////////////////////////////
+  double value=0.0;
+////////////////////////////////////////////////////////////////////////////////
+
   iel = list[0] / 6;
   ia  = list[0] % 6;
   pt  = &mesh->tetra[iel];
@@ -477,6 +481,11 @@ int MMG5_swpbdy(MMG5_pMesh mesh,MMG5_pSol met,int *list,int ret,int it1,
   c[0] = 0.5*( p0->c[0] + p1->c[0]);
   c[1] = 0.5*( p0->c[1] + p1->c[1]);
   c[2] = 0.5*( p0->c[2] + p1->c[2]);
+
+////////////////////////////////////////////////////////////////////////////////
+  value = 0.5 * (p0->value + p1->value);
+////////////////////////////////////////////////////////////////////////////////
+
   nm = MMG3D_newPt(mesh,c,MG_BDY);
   if ( !nm ) {
     MMG3D_POINT_REALLOC(mesh,met,nm,mesh->gap,
@@ -486,6 +495,14 @@ int MMG5_swpbdy(MMG5_pMesh mesh,MMG5_pSol met,int *list,int ret,int it1,
                          return -1
                          ,c,MG_BDY);
   }
+
+////////////////////////////////////////////////////////////////////////////////
+  if ( mesh->info.iso ) 
+  {
+    mesh->point[nm].value = value;
+  }
+////////////////////////////////////////////////////////////////////////////////
+
   assert ( met );
   if ( met->m ) {
     if ( typchk == 1 && (met->size>1) ) {
